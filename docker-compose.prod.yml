@@ -1,0 +1,41 @@
+# Production docker-compose for Hetzner VPS
+# Deploy to: /srv/audiobook-downloader/
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+    depends_on:
+      - backend
+    restart: unless-stopped
+    networks:
+      - internal
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:8000:8000"
+    environment:
+      - DATABASE_URL=sqlite+aiosqlite:///./data/audiobooks.db
+      - BOOKS_OUTPUT_DIR=/audiobooks
+      - SECRET_KEY=${SECRET_KEY}
+      - ADMIN_PASSWORD_HASH=${ADMIN_PASSWORD_HASH}
+      - CORS_ORIGINS=["https://get.library.icu","http://localhost:3000"]
+    volumes:
+      - ./data:/app/data
+      - /mnt/media/audiobooks:/audiobooks  # Shared with Audiobookshelf
+    restart: unless-stopped
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
