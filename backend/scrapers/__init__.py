@@ -242,7 +242,7 @@ def search_all(
     return aggregated
 
 
-def search_all_with_progress(
+async def search_all_with_progress(
     query: str,
     sites: Optional[List[str]] = None,
     per_site_limit: int = 5,
@@ -260,16 +260,17 @@ def search_all_with_progress(
 
     for i, site in enumerate(target_sites, 1):
         if progress_callback:
-            # Note: progress_callback is expected to be async in the router
-            if hasattr(progress_callback, '__call__'):
-                try:
-                    import asyncio
-                    if asyncio.iscoroutinefunction(progress_callback):
-                        asyncio.create_task(progress_callback(i, len(target_sites)))
-                    else:
-                        progress_callback(i, len(target_sites))
-                except Exception as e:
-                    logger.error(f"Error in progress callback: {e}")
+            # Note: progress_callback is expected to be async generator in the router
+            try:
+                # If it's an async generator function, call it and iterate
+                if asyncio.iscoroutinefunction(progress_callback):
+                    async for _ in progress_callback(i, len(target_sites)):
+                        pass  # Just consume the yielded value
+                # If it's callable, call directly
+                elif hasattr(progress_callback, '__call__'):
+                    progress_callback(i, len(target_sites))
+            except Exception as e:
+                logger.error(f"Error in progress callback: {e}")
         
         searcher = SEARCHERS.get(site)
         if not searcher:
