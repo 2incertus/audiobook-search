@@ -80,7 +80,6 @@ export default function QueuePage() {
     setNotice(null);
 
     const isCancellable = item.status === "downloading" || item.status === "fetching";
-    if (isCancellable && !confirm("Cancel this download?")) return;
 
     setPendingActionIds((prev) => {
       const next = new Set(prev);

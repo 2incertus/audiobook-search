@@ -84,54 +84,60 @@ export default function SearchResults({ results, onAddToQueue }: SearchResultsPr
           return (
             <div
               key={`${result.url}-${idx}`}
-              className={`flex items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-zinc-900 border rounded-lg transition-colors cursor-pointer ${
+              className={`flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-zinc-900 border rounded-lg transition-colors cursor-pointer ${
                 isSelected
                   ? "border-emerald-600 bg-zinc-800"
                   : "border-zinc-800 hover:border-zinc-700"
               }`}
               onClick={() => !isAdded && toggleSelect(result.url)}
             >
-              {/* Cover Image */}
-              <div className="w-14 h-14 sm:w-16 sm:h-16 bg-zinc-800 rounded overflow-hidden flex-shrink-0">
-                {result.cover_url ? (
-                  <Image
-                    src={result.cover_url}
-                    alt={result.title}
-                    width={64}
-                    height={64}
-                    className="w-full h-full object-cover"
-                    unoptimized
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-zinc-600 text-xs">
-                    No Cover
-                  </div>
-                )}
-              </div>
+              <div className="flex items-start gap-3 sm:gap-4 min-w-0 flex-1">
+                {/* Cover Image */}
+                <div className="w-14 h-14 sm:w-16 sm:h-16 bg-zinc-800 rounded overflow-hidden flex-shrink-0">
+                  {result.cover_url ? (
+                    <Image
+                      src={result.cover_url}
+                      alt={result.title}
+                      width={64}
+                      height={64}
+                      className="w-full h-full object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-zinc-600 text-xs">
+                      No Cover
+                    </div>
+                  )}
+                </div>
 
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <h3 className="font-medium text-zinc-100 text-sm sm:text-base truncate">{result.title}</h3>
-                <p className="text-xs sm:text-sm text-zinc-400 truncate">
-                  {result.author || "Unknown Author"}
-                </p>
-                <p className="text-xs text-zinc-500">{result.site}</p>
+                {/* Info */}
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-medium text-zinc-100 text-sm sm:text-base truncate">
+                    {result.title}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-zinc-400 truncate">
+                    {result.author || "Unknown Author"}
+                  </p>
+                  <p className="text-xs text-zinc-500 truncate">{result.site}</p>
+                </div>
               </div>
 
               {/* Actions */}
-              <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
+              <div className="flex items-center gap-2 flex-shrink-0 justify-end self-end sm:self-auto">
                 <a
                   href={result.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="p-2 text-zinc-500 hover:text-zinc-300 transition-colors touch-manipulation"
+                  className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-zinc-800/60 text-zinc-200 hover:bg-zinc-800 transition-colors touch-manipulation"
+                  aria-label="Open book page"
                 >
                   <ExternalLink size={16} />
+                  <span className="text-sm">Open</span>
                 </a>
                 {isAdded ? (
-                  <div className="p-2 text-emerald-500">
-                    <Check size={18} className="sm:size-[20px]" />
+                  <div className="inline-flex items-center justify-center w-10 h-10 text-emerald-500">
+                    <Check size={18} />
                   </div>
                 ) : (
                   <button
@@ -140,9 +146,10 @@ export default function SearchResults({ results, onAddToQueue }: SearchResultsPr
                       handleAddSingle(result.url);
                     }}
                     disabled={adding}
-                    className="p-2 text-zinc-400 hover:text-emerald-500 transition-colors touch-manipulation"
+                    className="inline-flex items-center justify-center w-10 h-10 text-zinc-100 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors touch-manipulation"
+                    aria-label="Add to queue"
                   >
-                    <Plus size={18} className="sm:size-[20px]" />
+                    <Plus size={18} />
                   </button>
                 )}
               </div>
