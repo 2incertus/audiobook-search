@@ -25,7 +25,8 @@ services:
       - DATABASE_URL=sqlite+aiosqlite:///./data/audiobooks.db
       - BOOKS_OUTPUT_DIR=/audiobooks
       - SECRET_KEY=${SECRET_KEY:-local-dev-secret-key}
-      - ADMIN_PASSWORD_HASH=${ADMIN_PASSWORD_HASH}
+      # Default local password is "admin123" if ADMIN_PASSWORD_HASH is not set.
+      - ADMIN_PASSWORD_HASH=${ADMIN_PASSWORD_HASH:-$$2b$$12$$u4oxHLekoy7LiWDKrFQ7Pu8RaTAeL1/oI27H0b8oXKZV9gOP93zmK}
       - CORS_ORIGINS=["http://localhost:3000","http://frontend:3000"]
     volumes:
       - ./data:/app/data
