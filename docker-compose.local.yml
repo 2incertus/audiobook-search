@@ -27,7 +27,7 @@ services:
       - SECRET_KEY=${SECRET_KEY:-local-dev-secret-key}
       # Default local password is "admin123" if ADMIN_PASSWORD_HASH is not set.
       - ADMIN_PASSWORD_HASH=${ADMIN_PASSWORD_HASH:-$$2b$$12$$u4oxHLekoy7LiWDKrFQ7Pu8RaTAeL1/oI27H0b8oXKZV9gOP93zmK}
-      - CORS_ORIGINS=["http://localhost:3000","http://frontend:3000"]
+      - CORS_ORIGINS=["http://localhost:3000","http://127.0.0.1:3000","http://frontend:3000"]
     volumes:
       - ./data:/app/data
       - /tmp/audiobooks:/audiobooks

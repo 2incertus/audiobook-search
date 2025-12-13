@@ -19,8 +19,12 @@ export default function LoginPage() {
     try {
       await login(password);
       router.push("/");
-    } catch {
-      setError("Invalid password");
+    } catch (err) {
+      if (err instanceof Error && err.message) {
+        setError(err.message);
+      } else {
+        setError("Login failed");
+      }
     } finally {
       setLoading(false);
     }
