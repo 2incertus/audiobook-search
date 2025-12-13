@@ -76,7 +76,7 @@ export default function SearchResults({ results, onAddToQueue }: SearchResultsPr
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-3">
+      <div className="flex flex-col gap-3">
         {results.map((result, idx) => {
           const isAdded = addedUrls.has(result.url);
           const isSelected = selectedUrls.has(result.url);
@@ -84,7 +84,7 @@ export default function SearchResults({ results, onAddToQueue }: SearchResultsPr
           return (
             <div
               key={`${result.url}-${idx}`}
-              className={`w-full max-w-full flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-zinc-900 border rounded-lg transition-colors cursor-pointer ${
+              className={`w-full max-w-full overflow-hidden flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-zinc-900 border rounded-lg transition-colors cursor-pointer ${
                 isSelected
                   ? "border-emerald-600 bg-zinc-800"
                   : "border-zinc-800 hover:border-zinc-700"
