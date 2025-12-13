@@ -18,13 +18,13 @@ export default function SearchProgress({
   return (
     <div className="w-full max-w-2xl mx-auto mb-6">
       <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0">
           <Loader2 size={16} className="animate-spin text-zinc-400" />
-          <span className="text-sm text-zinc-400">
+          <span className="text-sm text-zinc-400 truncate">
             {message}
           </span>
         </div>
-        <span className="text-xs text-zinc-500">
+        <span className="text-xs text-zinc-500 whitespace-nowrap">
           {currentSite}/{totalSites}
         </span>
       </div>

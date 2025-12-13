@@ -9,6 +9,7 @@ from app.database import get_db
 from app.models import QueueItem
 from app.schemas import QueueAddRequest, QueueItemResponse, QueueResponse
 from app.services.download_worker import process_queue
+from app.services.progress_tracker import progress_tracker
 
 router = APIRouter()
 
@@ -63,10 +64,12 @@ async def remove_from_queue(
     if not item:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Item not found")
 
-    if item.status == "downloading":
-        # Mark as cancelled so worker stops
+    if item.status in ("downloading", "fetching"):
+        # Mark as cancelled so worker stops (or doesn't transition into downloading)
         item.status = "cancelled"
+        item.error_message = "Cancelled by user"
         await db.commit()
+        await progress_tracker.queue_update(item.id, "cancelled", error_message=item.error_message)
     else:
         await db.execute(delete(QueueItem).where(QueueItem.id == item_id))
         await db.commit()

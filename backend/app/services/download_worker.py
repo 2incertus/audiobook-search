@@ -101,6 +101,12 @@ async def process_single_download(queue_item: QueueItem) -> bool:
             await progress_tracker.download_error(queue_item.id, "Could not retrieve book data")
             return False
 
+        # If the user cancelled during metadata fetching, stop before transitioning to downloading.
+        await db.refresh(result)
+        if result.status == "cancelled":
+            await progress_tracker.queue_update(queue_item.id, "cancelled")
+            return False
+
         # Update queue item with metadata
         result.title = book_data.get("title")
         result.author = book_data.get("author")
@@ -167,10 +173,11 @@ async def process_single_download(queue_item: QueueItem) -> bool:
 
             # Calculate ETA if we have progress data
             eta_seconds = None
-            if result.current_chapter > 0 and result.started_at:
+            completed_chapters = i - 1  # Chapters completed before this one
+            if completed_chapters > 0 and result.started_at:
                 elapsed = (datetime.utcnow() - result.started_at).total_seconds()
-                time_per_chapter = elapsed / result.current_chapter
-                chapters_remaining = result.total_chapters - result.current_chapter
+                time_per_chapter = elapsed / completed_chapters
+                chapters_remaining = result.total_chapters - completed_chapters
                 eta_seconds = int(time_per_chapter * chapters_remaining)
 
             await progress_tracker.download_progress(

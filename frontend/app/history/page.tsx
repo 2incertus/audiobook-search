@@ -20,6 +20,7 @@ export default function HistoryPage() {
   const router = useRouter();
   const [downloads, setDownloads] = useState<Download[]>([]);
   const [loading, setLoading] = useState(true);
+  const [notice, setNotice] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
@@ -36,12 +37,14 @@ export default function HistoryPage() {
 
   const fetchDownloads = async () => {
     setLoading(true);
+    setNotice(null);
     try {
       const data = await getDownloads(page, limit, searchQuery || undefined);
       setDownloads(data.items || []);
       setTotal(data.total || 0);
     } catch (error) {
       console.error("Failed to fetch downloads:", error);
+      setNotice(error instanceof Error ? error.message : "Failed to fetch downloads");
     } finally {
       setLoading(false);
     }
@@ -53,8 +56,10 @@ export default function HistoryPage() {
       await deleteDownload(id);
       setDownloads((prev) => prev.filter((d) => d.id !== id));
       setTotal((prev) => prev - 1);
+      setNotice("Removed from history");
     } catch (error) {
       console.error("Failed to delete:", error);
+      setNotice(error instanceof Error ? error.message : "Failed to delete");
     }
   };
 
@@ -63,11 +68,29 @@ export default function HistoryPage() {
   return (
     <div className="min-h-screen">
       <Navbar />
-      <main className="max-w-4xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-between mb-6">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
           <h1 className="text-2xl font-bold text-zinc-100">Download History</h1>
           <span className="text-sm text-zinc-500">{total} total</span>
         </div>
+
+        {notice && (
+          <div
+            role="status"
+            className="mb-6 rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-3 text-sm text-zinc-300"
+          >
+            <div className="flex items-start justify-between gap-3">
+              <span className="flex-1 min-w-0">{notice}</span>
+              <button
+                onClick={() => setNotice(null)}
+                aria-label="Dismiss message"
+                className="text-zinc-400 hover:text-zinc-100 transition-colors"
+              >
+                ×
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Search */}
         <div className="relative mb-6">
@@ -98,13 +121,13 @@ export default function HistoryPage() {
               {downloads.map((download) => (
                 <div
                   key={download.id}
-                  className="flex items-center justify-between p-4 bg-zinc-900 border border-zinc-800 rounded-lg"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 sm:p-4 bg-zinc-900 border border-zinc-800 rounded-lg"
                 >
                   <div className="flex-1 min-w-0">
                     <h3 className="font-medium text-zinc-100 truncate">
                       {download.title}
                     </h3>
-                    <p className="text-sm text-zinc-400">
+                    <p className="text-sm text-zinc-400 break-words">
                       {download.author || "Unknown Author"}
                       {download.narrator && ` - Narrated by ${download.narrator}`}
                     </p>
@@ -115,7 +138,7 @@ export default function HistoryPage() {
                   </div>
                   <button
                     onClick={() => handleDelete(download.id)}
-                    className="p-2 text-zinc-500 hover:text-red-400 transition-colors"
+                    className="self-end sm:self-auto p-2 text-zinc-500 hover:text-red-400 transition-colors touch-manipulation"
                     title="Remove from history"
                   >
                     <Trash2 size={16} />
@@ -126,7 +149,7 @@ export default function HistoryPage() {
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-4 mt-6">
+              <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 mt-6">
                 <button
                   onClick={() => setPage((p) => Math.max(1, p - 1))}
                   disabled={page === 1}

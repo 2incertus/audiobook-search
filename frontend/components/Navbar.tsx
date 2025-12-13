@@ -21,7 +21,7 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4">
         <div className="flex items-center justify-between h-14">
           <div className="flex items-center gap-1">
-            <span className="text-lg font-semibold text-zinc-100 mr-6">
+            <span className="text-base sm:text-lg font-semibold text-zinc-100 mr-3 sm:mr-6">
               Audiobooks
             </span>
             {/* Desktop Navigation */}

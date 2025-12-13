@@ -12,3 +12,9 @@ body {
   background: var(--background);
   font-family: system-ui, -apple-system, sans-serif;
 }
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}

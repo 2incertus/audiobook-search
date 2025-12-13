@@ -30,6 +30,23 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
   return response;
 }
 
+async function getErrorMessage(response: Response, fallback: string): Promise<string> {
+  try {
+    const contentType = response.headers.get("Content-Type") || "";
+    if (contentType.includes("application/json")) {
+      const data = await response.json();
+      if (typeof data?.detail === "string") return data.detail;
+      if (typeof data?.message === "string") return data.message;
+      if (typeof data?.error === "string") return data.error;
+    }
+    const text = await response.text();
+    if (text) return text;
+  } catch {
+    // ignore
+  }
+  return fallback;
+}
+
 export async function login(password: string): Promise<{ access_token: string }> {
   const response = await fetch(`${API_BASE}/api/auth/login`, {
     method: "POST",
@@ -38,7 +55,7 @@ export async function login(password: string): Promise<{ access_token: string }>
   });
 
   if (!response.ok) {
-    throw new Error("Invalid password");
+    throw new Error(await getErrorMessage(response, "Invalid password"));
   }
 
   const data = await response.json();
@@ -57,9 +74,7 @@ export async function search(query: string, sites?: string[]) {
     body: JSON.stringify({ query, sites, limit: 20 }),
   });
 
-  if (!response.ok) {
-    throw new Error("Search failed");
-  }
+  if (!response.ok) throw new Error(await getErrorMessage(response, "Search failed"));
 
   return response.json();
 }
@@ -74,9 +89,7 @@ export async function searchWithProgress(
     body: JSON.stringify({ query, sites, limit: 20 }),
   });
 
-  if (!response.ok) {
-    throw new Error("Search failed");
-  }
+  if (!response.ok) throw new Error(await getErrorMessage(response, "Search failed"));
 
   const reader = response.body?.getReader();
   const decoder = new TextDecoder();
@@ -123,7 +136,7 @@ export async function searchWithProgress(
 
 export async function getQueue() {
   const response = await fetchWithAuth("/api/queue");
-  if (!response.ok) throw new Error("Failed to fetch queue");
+  if (!response.ok) throw new Error(await getErrorMessage(response, "Failed to fetch queue"));
   return response.json();
 }
 
@@ -132,7 +145,7 @@ export async function addToQueue(urls: string[]) {
     method: "POST",
     body: JSON.stringify({ urls }),
   });
-  if (!response.ok) throw new Error("Failed to add to queue");
+  if (!response.ok) throw new Error(await getErrorMessage(response, "Failed to add to queue"));
   return response.json();
 }
 
@@ -140,7 +153,7 @@ export async function removeFromQueue(id: number) {
   const response = await fetchWithAuth(`/api/queue/${id}`, {
     method: "DELETE",
   });
-  if (!response.ok) throw new Error("Failed to remove from queue");
+  if (!response.ok) throw new Error(await getErrorMessage(response, "Failed to remove from queue"));
   return response.json();
 }
 
@@ -148,7 +161,7 @@ export async function retryDownload(id: number) {
   const response = await fetchWithAuth(`/api/queue/${id}/retry`, {
     method: "POST",
   });
-  if (!response.ok) throw new Error("Failed to retry download");
+  if (!response.ok) throw new Error(await getErrorMessage(response, "Failed to retry download"));
   return response.json();
 }
 
@@ -157,7 +170,7 @@ export async function getDownloads(page = 1, limit = 20, search?: string) {
   if (search) params.set("search", search);
 
   const response = await fetchWithAuth(`/api/downloads?${params}`);
-  if (!response.ok) throw new Error("Failed to fetch downloads");
+  if (!response.ok) throw new Error(await getErrorMessage(response, "Failed to fetch downloads"));
   return response.json();
 }
 
@@ -165,7 +178,7 @@ export async function deleteDownload(id: number) {
   const response = await fetchWithAuth(`/api/downloads/${id}`, {
     method: "DELETE",
   });
-  if (!response.ok) throw new Error("Failed to delete download");
+  if (!response.ok) throw new Error(await getErrorMessage(response, "Failed to delete download"));
   return response.json();
 }
 
