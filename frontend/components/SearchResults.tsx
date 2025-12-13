@@ -84,7 +84,7 @@ export default function SearchResults({ results, onAddToQueue }: SearchResultsPr
           return (
             <div
               key={`${result.url}-${idx}`}
-              className={`flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-zinc-900 border rounded-lg transition-colors cursor-pointer ${
+              className={`w-full max-w-full flex flex-col sm:flex-row sm:items-start gap-3 sm:gap-4 p-3 sm:p-4 bg-zinc-900 border rounded-lg transition-colors cursor-pointer ${
                 isSelected
                   ? "border-emerald-600 bg-zinc-800"
                   : "border-zinc-800 hover:border-zinc-700"
@@ -123,20 +123,20 @@ export default function SearchResults({ results, onAddToQueue }: SearchResultsPr
               </div>
 
               {/* Actions */}
-              <div className="flex items-center gap-2 flex-shrink-0 justify-end self-end sm:self-auto">
+              <div className="flex items-center gap-2 w-full sm:w-auto sm:justify-end min-w-0">
                 <a
                   href={result.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={(e) => e.stopPropagation()}
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded-md bg-zinc-800/60 text-zinc-200 hover:bg-zinc-800 transition-colors touch-manipulation"
+                  className="flex-1 sm:flex-none min-w-0 inline-flex items-center justify-center gap-2 px-3 py-2 rounded-md bg-zinc-800/60 text-zinc-200 hover:bg-zinc-800 transition-colors touch-manipulation"
                   aria-label="Open book page"
                 >
                   <ExternalLink size={16} />
-                  <span className="text-sm">Open</span>
+                  <span className="text-sm truncate">Open</span>
                 </a>
                 {isAdded ? (
-                  <div className="inline-flex items-center justify-center w-10 h-10 text-emerald-500">
+                  <div className="inline-flex items-center justify-center w-10 h-10 text-emerald-500 flex-shrink-0">
                     <Check size={18} />
                   </div>
                 ) : (
@@ -146,7 +146,7 @@ export default function SearchResults({ results, onAddToQueue }: SearchResultsPr
                       handleAddSingle(result.url);
                     }}
                     disabled={adding}
-                    className="inline-flex items-center justify-center w-10 h-10 text-zinc-100 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors touch-manipulation"
+                    className="inline-flex items-center justify-center w-10 h-10 text-zinc-100 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors touch-manipulation flex-shrink-0"
                     aria-label="Add to queue"
                   >
                     <Plus size={18} />
