@@ -76,7 +76,7 @@ export default function SearchResults({ results, onAddToQueue }: SearchResultsPr
         </div>
       )}
 
-      <div className="grid gap-3 sm:grid-cols-1">
+      <div className="grid grid-cols-1 gap-3">
         {results.map((result, idx) => {
           const isAdded = addedUrls.has(result.url);
           const isSelected = selectedUrls.has(result.url);
